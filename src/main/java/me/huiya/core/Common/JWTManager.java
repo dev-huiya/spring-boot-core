@@ -108,6 +108,9 @@ public class JWTManager {
             // 토큰에 넣을 유저 정보 준비
             HashMap<String, Object> userInfo = new HashMap<>();
 
+            // 기본 정보 입력
+            userInfo.put("id", AES256Util.encrypt(Integer.toString(user.getUserId()))); // 민감한 정보(DB key)라 암호화
+
             // 토큰에 람다식으로 값 입력
             setClaim.accept(userInfo);
 
@@ -235,8 +238,10 @@ public class JWTManager {
         Claim jws = this.verify(token.replace(HEADER_TOKEN_KEY, "")).getClaim("info");
         if(jws != null) {
             info = (HashMap<String, Object>) jws.asMap();
-            info.put("id", Integer.parseInt(AES256Util.decrypt((String) info.get("id"))));
-            info.put("rateId", Integer.parseInt(AES256Util.decrypt((String) info.get("rateId"))));
+            
+            if(info.containsKey("id")) {
+                info.put("id", Integer.parseInt(AES256Util.decrypt((String) info.get("id"))));
+            }
         }
         return info;
     }
