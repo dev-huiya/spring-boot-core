@@ -136,7 +136,7 @@ public class JWTManager {
 
             token.setUserId(user.getUserId());
             token.setToken(tokenStr);
-            token.setExpire(cal.getTime());
+            token.setExpire(accessExpireDate);
             token.setPublicKey(rsa.getPublic());
             token.setPrivateKey(rsa.getPrivate());
             token.setRefreshExpire(refreshExpireDate);
@@ -195,7 +195,7 @@ public class JWTManager {
 
         Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) publicKey, (RSAPrivateKey) privateKey);
         JWTVerifier verifier = JWT.require(algorithm)
-                .withIssuer("api.tradeinfo.kr")
+                .withIssuer(this.API_SERVER_URL)
                 .build(); //Reusable verifier instance
 
         return verifier.verify(token);
